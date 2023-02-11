@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <cmath>
+#include <array>
 #undef main
 
 //-------------------------------
@@ -152,7 +153,8 @@ double* CanvasToViewport(double p2d[])
 // Computes the intersection of a ray and a sphere. Returns the values of t for the intersections.
 //Camera position is origin
 //Direction is what CanvasToViewport returns
-double* IntersectRaySphere(double origin[], double direction[], Sphere* sphere)
+
+std::array<double, 2> IntersectRaySphere(double origin[], double direction[], Sphere* sphere)
 {
 	double* oc = subtract(origin, sphere->center);
 
@@ -163,14 +165,15 @@ double* IntersectRaySphere(double origin[], double direction[], Sphere* sphere)
 	double discriminant = k2 * k2 - 4 * k1 * k3;
 	if (discriminant < 0)
 	{
-		static double infinity[2] = { INFIN, INFIN };
+		std::array<double, 2> infinity = { INFIN, INFIN };
 		return infinity;
 	}
 
 	double t1 = (-k2 + std::sqrt(discriminant)) / (2 * k1);
 	double t2 = (-k2 - std::sqrt(discriminant)) / (2 * k1);
 
-	static double t[2] = { t1,t2 };
+	std::array<double, 2> t = { t1,t2 };
+
 	return t;
 }
 
@@ -226,7 +229,7 @@ double* TraceRay(double origin[], double direction[], double min_t, double max_t
 	//4 IS HARD CODED FIX LATER LOVE YOU MWAH
 	for (int i = 0; i < 4; i++)
 	{
-		double* ts = IntersectRaySphere(origin, direction, spheres[i]);
+		std::array<double, 2> ts = IntersectRaySphere(origin, direction, spheres[i]);
 
 		if (ts[0] < closest_t && min_t < ts[0] && ts[0] < max_t)
 		{
